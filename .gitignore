@@ -1,0 +1,3 @@
+/src/*.o
+/picoboot.elf
+/disk.img
