@@ -18,10 +18,6 @@
 #include "util.h"
 #include "crc32.h"
 
-#include <inttypes.h>
-#include <stdlib.h>
-#include <string.h>
-
 // Licensing note: U-boot is licensed under the GPL which is incompatible with
 //                 fwup's Apache 2.0 license. Please don't copy code from
 //                 U-boot especially since the U-boot environment data
@@ -156,7 +152,7 @@ static void uboot_env_sort(struct uboot_env *env)
     for (pair = env->vars, i = 0; pair != NULL; pair = pair->next, i++)
         pairarray[i] = pair;
 
-    qsort(pairarray, count, sizeof(struct uboot_name_value *), env_name_compare);
+    qsort_(pairarray, count, sizeof(struct uboot_name_value *), env_name_compare);
 
     for (i = 0; i < count - 1; i++)
         pairarray[i]->next = pairarray[i + 1];

@@ -1,6 +1,16 @@
 # Picoboot
 
+## Building from source
+
+You'll need an Arm64 cross-compiler, U-Boot environment creation tools and qemu-system. Here's how to install with Homebrew:
+
+```sh
+brew install aarch64-elf-gcc u-boot-tools qemu
 ```
+
+Here's how to run with the provided test image:
+
+```sh
 make
 ./run_qemu.sh
 ```

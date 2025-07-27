@@ -58,7 +58,7 @@ void *memset_(void *b, int c, size_t len)
     return b;
 }
 
-void qsort(void *base, size_t nel, size_t width, int (*compar)(const void *, const void *))
+void qsort_(void *base, size_t nel, size_t width, int (*compar)(const void *, const void *))
 {
     // Bubble sort
     char *arr = (char *)base;

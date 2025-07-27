@@ -18,7 +18,7 @@
 #define UBOOT_ENV_H
 
 #include <stdint.h>
-#include <stdlib.h>
+#include <stddef.h>
 
 struct uboot_name_value {
     char *name;

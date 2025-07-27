@@ -1,5 +1,5 @@
 #CROSS = aarch64-linux-gnu
-CROSS = /Users/fhunleth/.nerves/artifacts/nerves_toolchain_aarch64_nerves_linux_gnu-darwin_arm-13.2.0/bin/aarch64-nerves-linux-gnu
+CROSS = aarch64-elf
 
 all: disk.img
 
