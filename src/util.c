@@ -132,11 +132,11 @@ extern char _stack_top; // Defined in linker script
 void *malloc_(size_t size)
 {
     static char *heap = NULL;
-    if (heap == NULL) {
+    if (heap == NULL)
         heap = (char *) &_stack_top;
-    }
+
     char *ptr = heap;
-    heap += size;
+    heap += (size + 7) & ~0x7; // Align to 8 bytes
     return (void*) ptr;
 }
 
