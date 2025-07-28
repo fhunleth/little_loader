@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#define KERNEL_LBA           0x80        // Sector 128 = offset 0x10000
+#define KERNEL_LBA           0x2000        // See demo/fwup.conf
 #define KERNEL_MAX_LENGTH    (64 * 1024 * 1024)
 #define KERNEL_LOAD_ADDR     0x40200000UL
 

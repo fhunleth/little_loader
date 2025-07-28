@@ -1,7 +1,10 @@
 #CROSS = aarch64-linux-gnu
 CROSS = aarch64-elf
 
-all: disk.img
+CFLAGS = -O2 -nostdlib -ffreestanding -fno-builtin
+CFLAGS += -DPROGRAM_VERSION=0.1.0
+
+all: picoboot.elf disk.img
 
 gdb:
 	$(CROSS)-gdb picoboot.elf
@@ -9,16 +12,18 @@ gdb:
 gdb-vmlinux:
 	$(CROSS)-gdb vmlinux
 
-disk.img: picoboot.elf Image
-	dd if=/dev/zero of=disk.img bs=1M count=64
-	dd if=Image of=disk.img seek=128 conv=notrunc
+disk.img: demo.fw
+	fwup demo.fw -d disk.img
+
+demo.fw: demo/Image demo/fwup.conf
+	fwup -c -f demo/fwup.conf -o demo.fw
 
 picoboot.elf: src/start.o src/main.o src/virtio_blk.o src/pl011_uart.o src/util.o src/uboot_env.o src/crc32.o src/printf.o
 	$(CROSS)-ld -T src/linker.ld -z max-page-size=4096 -o $@ $^
 	$(CROSS)-strip -s $@
 
 %.o: %.c
-	$(CROSS)-gcc -c -O2 -nostdlib -ffreestanding -fno-builtin -o $@ $<
+	$(CROSS)-gcc -c $(CFLAGS) -o $@ $<
 
 %.o: %.S
 	$(CROSS)-as -o $@ $<
@@ -27,5 +32,5 @@ virtio_blk.o: virtio.h
 main.o: virtio.h
 
 clean:
-	rm -f src/*.o *.elf disk.img
+	rm -f src/*.o *.elf disk.img demo/demo.fw
 

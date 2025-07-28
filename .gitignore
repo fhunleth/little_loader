@@ -1,3 +1,4 @@
 /src/*.o
 /picoboot.elf
 /disk.img
+/demo.fw
