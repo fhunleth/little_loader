@@ -144,3 +144,57 @@ void free_(void *ptr)
 {
     (void)ptr;
 }
+
+static int char_to_digit(char c)
+{
+    if (c >= '0' && c <= '9') {
+        return c - '0';
+    } else if (c >= 'a' && c <= 'f') {
+        return c - 'a' + 10;
+    } else if (c >= 'A' && c <= 'F') {
+        return c - 'A' + 10;
+    }
+    return -1; // Not a valid digit
+}
+
+unsigned long long strtoull_(const char * str, char ** endptr, int base)
+{
+    unsigned long long result = 0;
+    int digit;
+
+    // Skip whitespace
+    while (*str == ' ') {
+        str++;
+    }
+
+    // Handle optional prefix
+    if (base == 0) {
+        if (*str == '0') {
+            str++;
+            if (*str == 'x' || *str == 'X') {
+                base = 16;
+                str++;
+            } else {
+                base = 10;
+            }
+        } else {
+            base = 10;
+        }
+    }
+
+    // Convert digits
+    while ((digit = char_to_digit(*str)) != -1) {
+        if (digit >= base) {
+            break;
+        }
+        result = result * base + digit;
+        str++;
+    }
+
+    // Set endptr if not NULL
+    if (endptr) {
+        *endptr = (char *)str;
+    }
+
+    return result;
+}

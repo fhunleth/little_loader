@@ -70,5 +70,6 @@ size_t strlen_(const char *s);
 void putchar_(char c);
 void *malloc_(size_t size);
 void free_(void *ptr);
+unsigned long long strtoull_(const char * str, char ** endptr, int base);
 
 #endif // UTIL_H

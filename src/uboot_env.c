@@ -23,9 +23,10 @@
 //                 U-boot especially since the U-boot environment data
 //                 structure is simple enough to reverse engineer by playing
 //                 with mkenvimage.
-void uboot_env_init(struct uboot_env *env)
+void uboot_env_init(struct uboot_env *env, size_t len)
 {
-    memset_(env, 0, sizeof(struct uboot_env));
+    env->env_size = len;
+    env->vars = NULL;
 }
 
 int uboot_env_read(struct uboot_env *env, const char *buffer)

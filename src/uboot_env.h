@@ -32,7 +32,7 @@ struct uboot_env {
     struct uboot_name_value *vars;
 };
 
-void uboot_env_init(struct uboot_env *env);
+void uboot_env_init(struct uboot_env *env, size_t len);
 int uboot_env_read(struct uboot_env *env, const char *buffer);
 int uboot_env_setenv(struct uboot_env *env, const char *name, const char *value);
 int uboot_env_unsetenv(struct uboot_env *env, const char *name);

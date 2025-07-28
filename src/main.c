@@ -1,13 +1,18 @@
 #include "virtio.h"
 #include "pl011_uart.h"
+#include "uboot_env.h"
 #include "util.h"
 
 #include <stdint.h>
 #include <stddef.h>
 
-#define KERNEL_LBA           0x2000        // See demo/fwup.conf
+#define UBOOT_ENV_LBA        16
+#define UBOOT_ENV_SIZE       (256 * 512) // 128 KiB
+#define DEFAULT_KERNEL_LBA   512 // Initially what's not in demo/fwup.conf to avoid missing a U-Boot environment issue
 #define KERNEL_MAX_LENGTH    (64 * 1024 * 1024)
 #define KERNEL_LOAD_ADDR     0x40200000UL
+
+static struct uboot_env uboot_env;
 
 void virtio_blk_init(void);
 int virtio_blk_read(uint64_t lba, uint32_t len_bytes, void *buffer);
@@ -27,6 +32,35 @@ uint32_t be32_to_le32(uint32_t x)
            ((x << 24) & 0xFF000000);
 }
 
+static uint64_t process_uboot_env()
+{
+    uint8_t *buffer = malloc_(UBOOT_ENV_SIZE);
+    struct uboot_env env;
+
+    uboot_env_init(&env, UBOOT_ENV_SIZE);
+    int rc = virtio_blk_read(UBOOT_ENV_LBA, UBOOT_ENV_SIZE, buffer);
+    if (rc < 0)
+        fatal("Failed to read u-boot environment from LBA %d\n", UBOOT_ENV_LBA);
+
+    if (uboot_env_read(&env, (const char *)buffer) < 0) {
+        info("Failed to read u-boot environment, using defaults");
+        return DEFAULT_KERNEL_LBA;
+    }
+
+    uint64_t kernel_lba = DEFAULT_KERNEL_LBA;
+    char *kernel_lba_str = NULL;
+    uboot_env_getenv(&env, "a.kernel_lba", &kernel_lba_str);
+    if (kernel_lba_str) {
+        kernel_lba = strtoull_(kernel_lba_str, NULL, 10);
+        free_(kernel_lba_str);
+    } else {
+        info("No 'a.kernel_lba' variable found in u-boot environment, using default.");
+
+    }
+    uboot_env_free(&env);
+    return kernel_lba;
+}
+
 struct kernel_header {
   uint32_t code0;	/* Executable code */
   uint32_t code1;	/* Executable code */
@@ -43,20 +77,20 @@ struct kernel_header {
 static size_t load_kernel(uint64_t lba, uint8_t *kernel_base)
 {
     int rc = virtio_blk_read(lba, SECTOR_SIZE, kernel_base);
-    if (rc != 0)
-        fatal("Failed to read kernel header\n");
+    if (rc < 0)
+        fatal("Failed to read kernel header at LBA %lu", lba);
 
     struct kernel_header *header = (struct kernel_header*) kernel_base;
     if (header->magic != 0x644d5241)
-        fatal("Linux kernel header magic isn't ARM\\x64\n");
+        fatal("Linux kernel header magic isn't ARM\\x64");
 
     if (header->image_size > KERNEL_MAX_LENGTH)
-        fatal("Linux kernel header too large\n");
+        fatal("Linux kernel header image size of %lu is larger than max support size of %lu", header->image_size, KERNEL_MAX_LENGTH);
 
     int num_sectors = (int) ((header->image_size + SECTOR_SIZE - 1) / SECTOR_SIZE);
-    rc = virtio_blk_read(KERNEL_LBA + 1, (num_sectors - 1) * SECTOR_SIZE, kernel_base + SECTOR_SIZE);
-    if (rc != 0)
-        fatal("Failed to read kernel\n");
+    rc = virtio_blk_read(lba + 1, (num_sectors - 1) * SECTOR_SIZE, kernel_base + SECTOR_SIZE);
+    if (rc < 0)
+        fatal("Failed to read kernel");
 
     return header->image_size;
 }
@@ -86,8 +120,11 @@ void rom_main(uint64_t dtb_source) {
 
     virtio_blk_init();
 
-    uart_puts("Loading Linux...\n");
-    size_t kernel_len = load_kernel(KERNEL_LBA, (uint8_t*) KERNEL_LOAD_ADDR);
+    info("Loading u-boot environment from LBA %d", UBOOT_ENV_LBA);
+    uint64_t kernel_lba = process_uboot_env();
+
+    info("Loading Linux kernel from LBA %lu", kernel_lba);
+    size_t kernel_len = load_kernel(kernel_lba, (uint8_t*) KERNEL_LOAD_ADDR);
 
     uint8_t *dtb_load_addr = (uint8_t*) (KERNEL_LOAD_ADDR + ((kernel_len + 7) & ~0x7));
     load_dtb((uint32_t*) dtb_source, dtb_load_addr);

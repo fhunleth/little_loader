@@ -136,6 +136,9 @@ int virtio_blk_read(uint64_t lba, uint32_t len_bytes, void *buffer) {
       __sync_synchronize();
     }
 
-    return status;
+    if (status == VIRTIO_BLK_S_OK)
+        return len_bytes;
+    else
+        return -status;
 }
 
