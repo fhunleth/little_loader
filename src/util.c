@@ -127,12 +127,12 @@ void putchar_(char c)
     uart_putc(c);
 }
 
-extern char _heap_start; // Defined in linker script
+extern char _stack_top; // Defined in linker script
 void *malloc_(size_t size)
 {
     static char *heap = NULL;
     if (heap == NULL) {
-        heap = (char *) &_heap_start;
+        heap = (char *) &_stack_top;
     }
     char *ptr = heap;
     heap += size;

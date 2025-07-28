@@ -16,7 +16,4 @@ SECTIONS {
 
   . = ALIGN(16);
   _stack_top = . + 0x1000;
-
-  . = ALIGN(16);
-  _heap_start = .;
 }
