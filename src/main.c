@@ -65,7 +65,7 @@ void load_dtb(uint32_t *dtb_source, uint8_t *dtb_load_addr)
 {
     uint32_t magic = dtb_source[0];
     if (magic != 0xedfe0dd0)
-        fatal("DTB address needs to be passed in x0\n");
+        fatal("DTB address needs to be passed in x0, but magic number is 0x%08x", magic);
 
     uint32_t len = be32_to_le32(dtb_source[1]);
 
@@ -78,7 +78,7 @@ void load_dtb(uint32_t *dtb_source, uint8_t *dtb_load_addr)
 
 void rom_main(uint64_t dtb_source) {
     uart_init();
-    uart_puts(PROGRAM_NAME " " PROGRAM_VERSION_STR "\n");
+    info(PROGRAM_NAME " " PROGRAM_VERSION_STR);
 
     int el = get_el();
     if (el != 2)
@@ -97,7 +97,7 @@ void rom_main(uint64_t dtb_source) {
     :: "r"(0x3)  // Enable EL0 access to cntvct_el0 and cntfrq_el0
     );
 
-    uart_puts("Starting Linux...\n");
+    info("Starting Linux...");
     asm volatile (
         "mov x0, %0\n"              // dtb_addr → x0
         "mov x1, xzr\n"

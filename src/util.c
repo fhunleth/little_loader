@@ -23,6 +23,7 @@ void info(const char *fmt, ...)
     va_start(ap, fmt);
     vprintf_(fmt, ap);
     va_end(ap);
+    uart_puts("\r\n");
 }
 
 void fatal(const char *fmt, ...)
