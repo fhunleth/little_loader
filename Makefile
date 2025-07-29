@@ -1,7 +1,7 @@
 #CROSS = aarch64-linux-gnu
 CROSS = aarch64-elf
 
-#DEBUG = 1
+# DEBUG = 1
 
 ifeq ($(DEBUG), 1)
 CFLAGS += -g -DDEBUG
@@ -26,6 +26,9 @@ disk.img: demo.fw
 
 demo.fw: demo/Image demo/fwup.conf
 	fwup -c -f demo/fwup.conf -o demo.fw
+
+upgrade: demo.fw
+	fwup demo.fw -d disk.img -t upgrade
 
 picoboot.elf: src/start.o src/main.o src/virtio_blk.o src/pl011_uart.o src/util.o src/uboot_env.o src/crc32.o src/printf.o
 	$(CROSS)-ld -T src/linker.ld $(LDFLAGS) -o $@ $^

@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h>
 
-// See https://docs.oasis-open.org/virtio/virtio/v1.1/virtio-v1.1.pdf
+// See https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.pdf
 
 // HACK: It could be anywhere from 0x0a000000UL to 0xa003e00 according to the dtb. I found it manually.
 //#define VIRTIO_BLK_MMIO_BASE 0xa003e00UL
@@ -45,7 +45,15 @@
 
 #define SECTOR_SIZE          512
 
-#define VIRTIO_BLK_T_IN  0
+#define VIRTIO_BLK_T_IN 0
+#define VIRTIO_BLK_T_OUT 1
+#define VIRTIO_BLK_T_FLUSH 4
+#define VIRTIO_BLK_T_GET_ID 8
+#define VIRTIO_BLK_T_GET_LIFETIME 10
+#define VIRTIO_BLK_T_DISCARD 11
+#define VIRTIO_BLK_T_WRITE_ZEROES 13
+#define VIRTIO_BLK_T_SECURE_ERASE 14
+
 #define VIRTQ_DESC_F_NEXT  1
 #define VIRTQ_DESC_F_WRITE 2
 
@@ -87,3 +95,6 @@ struct virtio_blk_req {
     uint64_t sector;
 } __attribute__((packed));
 
+void virtio_blk_init(void);
+int virtio_blk_read(uint64_t lba, uint32_t len_bytes, void *buffer);
+int virtio_blk_write(uint64_t lba, uint32_t len_bytes, const void *buffer);

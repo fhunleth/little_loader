@@ -14,9 +14,6 @@
 
 static struct uboot_env uboot_env;
 
-void virtio_blk_init(void);
-int virtio_blk_read(uint64_t lba, uint32_t len_bytes, void *buffer);
-
 static int get_el(void)
 {
     unsigned long el;
@@ -42,21 +39,51 @@ static uint64_t process_uboot_env()
     if (rc < 0)
         fatal("Failed to read u-boot environment from LBA %d\n", UBOOT_ENV_LBA);
 
-    if (uboot_env_read(&env, (const char *)buffer) < 0) {
-        info("Failed to read u-boot environment, using defaults");
-        return DEFAULT_KERNEL_LBA;
-    }
-
     uint64_t kernel_lba = DEFAULT_KERNEL_LBA;
+    char *active_slot = NULL;
+    char *upgrade_available = NULL;
+    char *bootcount = NULL;
     char *kernel_lba_str = NULL;
-    uboot_env_getenv(&env, "a.kernel_lba", &kernel_lba_str);
-    if (kernel_lba_str) {
-        kernel_lba = strtoull_(kernel_lba_str, NULL, 10);
-        free_(kernel_lba_str);
-    } else {
-        info("No 'a.kernel_lba' variable found in u-boot environment, using default.");
+    char kernel_lba_key[32] = "x.kernel_lba";
 
+    OK_OR_CLEANUP_MSG(uboot_env_read(&env, (const char *)buffer), "Failed to read u-boot environment from buffer");
+    OK_OR_CLEANUP_MSG(uboot_env_getenv(&env, "nerves_fw_active", &active_slot), "Failed to get `nerves_fw_active` from U-Boot environment");
+    OK_OR_CLEANUP_MSG(uboot_env_getenv(&env, "upgrade_available", &upgrade_available), "Failed to get `upgrade_available`. Skipping automatic failback check.");
+
+    if (strcmp_(upgrade_available, "1") == 0) {
+        OK_OR_CLEANUP_MSG(uboot_env_getenv(&env, "bootcount", &bootcount), "Failed to get `bootcount`. Skipping automatic failback check.");
+        if (strcmp_(bootcount, "1") == 0) {
+            // Previous boot failed, so switch back to the other slot
+            info("Slot %s didn't validate, so reverting back...", active_slot);
+            if (active_slot[0] == 'a')
+                active_slot[0] = 'b';
+            else
+                active_slot[0] = 'a';
+
+            uboot_env_setenv(&env, "nerves_fw_active", active_slot);
+            uboot_env_setenv(&env, "upgrade_available", "0");
+            uboot_env_setenv(&env, "bootcount", "0");
+        } else {
+            // First try of new firmware slot, so increment bootcount
+            info("Trying slot %s for the first time...", active_slot);
+            uboot_env_setenv(&env, "bootcount", "1");
+        }
+
+        if (uboot_env_write(&env, buffer) < 0 || virtio_blk_write(UBOOT_ENV_LBA, UBOOT_ENV_SIZE, buffer) < 0)
+            info("Failed to write u-boot environment after failback!!");
     }
+
+    kernel_lba_key[0] = active_slot[0];
+    OK_OR_CLEANUP_MSG(uboot_env_getenv(&env, kernel_lba_key, &kernel_lba_str), "No '%s' variable found in u-boot environment, using default.", kernel_lba_key);
+    kernel_lba = strtoull_(kernel_lba_str, NULL, 10);
+
+    info("Booting from slot %s with kernel LBA %lu", active_slot, kernel_lba);
+
+cleanup:
+    free_(kernel_lba_str);
+    free_(active_slot);
+    free_(upgrade_available);
+    free_(bootcount);
     uboot_env_free(&env);
     return kernel_lba;
 }
@@ -120,10 +147,7 @@ void rom_main(uint64_t dtb_source) {
 
     virtio_blk_init();
 
-    info("Loading u-boot environment from LBA %d", UBOOT_ENV_LBA);
     uint64_t kernel_lba = process_uboot_env();
-
-    info("Loading Linux kernel from LBA %lu", kernel_lba);
     size_t kernel_len = load_kernel(kernel_lba, (uint8_t*) KERNEL_LOAD_ADDR);
 
     uint8_t *dtb_load_addr = (uint8_t*) (KERNEL_LOAD_ADDR + ((kernel_len + 7) & ~0x7));

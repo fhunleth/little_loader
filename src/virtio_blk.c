@@ -10,10 +10,10 @@ struct virtq {
     struct virtq_used used;
 } __attribute__((aligned(16)));
 
-static volatile struct virtq_desc desc[QUEUE_SIZE] __attribute__((aligned(16)));
-static volatile struct virtq_avail avail __attribute__((aligned(2)));
-static volatile struct virtq_used used __attribute__((aligned(4)));
-static volatile struct virtio_blk_req req __attribute__((aligned(16)));
+static struct virtq_desc desc[QUEUE_SIZE] __attribute__((aligned(16)));
+static struct virtq_avail avail __attribute__((aligned(2)));
+static struct virtq_used used __attribute__((aligned(4)));
+static struct virtio_blk_req req __attribute__((aligned(16)));
 
 static volatile uint8_t status;
 
@@ -80,13 +80,10 @@ void virtio_blk_init(void) {
 
     VIRT_MMIO_QUEUE_NUM = QUEUE_SIZE;
 
-    /*
-    memset(&desc, 0, sizeof(desc));
-    memset(&avail, 0, sizeof(avail));
-    memset(&used, 0, sizeof(used));
-*/
-    avail.idx = 0;
-    avail.flags = 0;
+    memset_(&desc, 0, sizeof(desc));
+    memset_(&avail, 0, sizeof(avail));
+    memset_(&used, 0, sizeof(used));
+    memset_(&req, 0, sizeof(req));
 
     VIRT_MMIO_QUEUE_DESC_LOW  = (uintptr_t)&desc >> 0;
     VIRT_MMIO_QUEUE_DESC_HIGH = (uintptr_t)&desc >> 32;
@@ -102,8 +99,8 @@ void virtio_blk_init(void) {
     VIRT_MMIO_STATUS = mmio_status;
 }
 
-int virtio_blk_read(uint64_t lba, uint32_t len_bytes, void *buffer) {
-    req.type = VIRTIO_BLK_T_IN;
+static int do_virtio_blk_io(uint32_t type, uint64_t lba, uint32_t len_bytes, void *buffer) {
+    req.type = type;
     req.reserved = 0;
     req.sector = lba;
 
@@ -114,7 +111,11 @@ int virtio_blk_read(uint64_t lba, uint32_t len_bytes, void *buffer) {
 
     desc[1].addr = (uintptr_t)buffer;
     desc[1].len = len_bytes;
-    desc[1].flags = VIRTQ_DESC_F_WRITE | VIRTQ_DESC_F_NEXT;
+    if (type == VIRTIO_BLK_T_IN) {
+        desc[1].flags = VIRTQ_DESC_F_WRITE | VIRTQ_DESC_F_NEXT;
+    } else {
+        desc[1].flags = VIRTQ_DESC_F_NEXT;
+    }
     desc[1].next = 2;
 
     status = 0xff; // device writes 0 on success
@@ -142,3 +143,10 @@ int virtio_blk_read(uint64_t lba, uint32_t len_bytes, void *buffer) {
         return -status;
 }
 
+int virtio_blk_read(uint64_t lba, uint32_t len_bytes, void *buffer) {
+    return do_virtio_blk_io(VIRTIO_BLK_T_IN, lba, len_bytes, buffer);
+}
+
+int virtio_blk_write(uint64_t lba, uint32_t len_bytes, const void *buffer) {
+    return do_virtio_blk_io(VIRTIO_BLK_T_OUT, lba, len_bytes, (void *)buffer);
+}
