@@ -10,10 +10,10 @@ struct virtq {
     struct virtq_used used;
 } __attribute__((aligned(16)));
 
-static struct virtq_desc desc[QUEUE_SIZE] __attribute__((aligned(16)));
-static struct virtq_avail avail __attribute__((aligned(2)));
-static struct virtq_used used __attribute__((aligned(4)));
-static struct virtio_blk_req req __attribute__((aligned(16)));
+static volatile struct virtq_desc desc[QUEUE_SIZE] __attribute__((aligned(16)));
+static volatile struct virtq_avail avail __attribute__((aligned(2)));
+static volatile struct virtq_used used __attribute__((aligned(4)));
+static volatile struct virtio_blk_req req __attribute__((aligned(16)));
 
 static volatile uint8_t status;
 
@@ -80,10 +80,10 @@ void virtio_blk_init(void) {
 
     VIRT_MMIO_QUEUE_NUM = QUEUE_SIZE;
 
-    memset_(&desc, 0, sizeof(desc));
-    memset_(&avail, 0, sizeof(avail));
-    memset_(&used, 0, sizeof(used));
-    memset_(&req, 0, sizeof(req));
+    memset_((void*) &desc, 0, sizeof(desc));
+    memset_((void*) &avail, 0, sizeof(avail));
+    memset_((void*) &used, 0, sizeof(used));
+    memset_((void*) &req, 0, sizeof(req));
 
     VIRT_MMIO_QUEUE_DESC_LOW  = (uintptr_t)&desc >> 0;
     VIRT_MMIO_QUEUE_DESC_HIGH = (uintptr_t)&desc >> 32;
