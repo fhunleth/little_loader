@@ -1,3 +1,5 @@
+VERSION=0.1.0
+
 #CROSS = aarch64-linux-gnu
 CROSS = aarch64-elf
 
@@ -10,8 +12,12 @@ else
 CFLAGS += -O2
 endif
 CFLAGS += -nostdlib -ffreestanding -fno-builtin
-CFLAGS += -DPROGRAM_VERSION=0.1.0
+CFLAGS += -DPROGRAM_VERSION=$(VERSION)
 LDFLAGS += -z max-page-size=4096
+
+S_SRC = $(wildcard src/*.S)
+C_SRC = $(wildcard src/*.c)
+OBJS = $(C_SRC:.c=.o) $(S_SRC:.S=.o)
 
 all: picoboot.elf disk.img
 
@@ -30,7 +36,7 @@ demo.fw: demo/Image demo/fwup.conf
 upgrade: demo.fw
 	fwup demo.fw -d disk.img -t upgrade
 
-picoboot.elf: src/start.o src/main.o src/virtio_blk.o src/pl011_uart.o src/util.o src/uboot_env.o src/crc32.o src/printf.o
+picoboot.elf: $(OBJS)
 	$(CROSS)-ld -T src/linker.ld $(LDFLAGS) -o $@ $^
 
 %.o: %.c
@@ -43,5 +49,5 @@ virtio_blk.o: virtio.h
 main.o: virtio.h
 
 clean:
-	rm -f src/*.o *.elf disk.img demo/demo.fw
+	$(RM) $(OBJS) *.elf disk.img demo/demo.fw
 

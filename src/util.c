@@ -41,6 +41,8 @@ void fatal(const char *fmt, ...)
 }
 
 // Minimal C library function implementations
+//
+// These were almost 100% coded by Claude
 void *memcpy_(void *dst, const void *src, size_t n)
 {
     unsigned char *d = dst;
