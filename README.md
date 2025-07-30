@@ -21,12 +21,32 @@ The following environment variables are meaningful:
 
 ## Building from source
 
-You'll need an Arm64 cross-compiler at a minimum. Qemu-system and fwup are
-needed to build and run the demo image.  Here's how to install with Homebrew:
+First install `fwup` and `qemu-system`. On Homebrew, this is:
 
 ```sh
-brew install aarch64-elf-gcc fwup qemu
+brew install fwup qemu
 ```
+
+Then install an ARM64 cross-compiler. Any one should do. If you use `asdf`,
+then you can get one of the Nerves toolchain ones:
+
+```sh
+asdf plugin add nerves-toolchain
+
+# Next line is optional, but you'll quickly see.
+export GITHUB_API_TOKEN=$(gh auth token)
+
+asdf install
+```
+
+Another perfectly fine ARM64 cross-compiler can be installed with Homebrew:
+
+```sh
+brew install aarch64-elf-gcc
+```
+
+If you want to use the Homebrew cross-compiler, update the value of `CROSS` in
+the `Makefile`.
 
 Here's how to run with the provided test image:
 

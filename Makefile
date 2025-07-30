@@ -1,7 +1,8 @@
 VERSION=0.1.0
 
-#CROSS = aarch64-linux-gnu
-CROSS = aarch64-elf
+CROSS = aarch64-nerves-linux-gnu
+# Uncomment when building with Homebrew's AARCH64 cross-compiler
+#CROSS = aarch64-elf
 
 # DEBUG = 1
 
