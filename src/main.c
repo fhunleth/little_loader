@@ -137,14 +137,40 @@ void load_dtb(uint32_t *dtb_source, uint8_t *dtb_load_addr)
         dest[i] = dtb_source[i];
 }
 
+static void setup_el2()
+{
+    // Enable access to the virtual timer and counter in EL0
+    // This is necessary for the kernel to use the system timer.
+    asm volatile(
+        "msr cntkctl_el1, %0\n"
+        :: "r"(0x3)
+    );
+}
 
 void rom_main(uint64_t dtb_source) {
     uart_init();
-    info(PROGRAM_NAME " " PROGRAM_VERSION_STR);
 
-    int el = get_el();
-    if (el != 2)
-        fatal("CPU mode must be in EL2 (-M virt,virtualization=on)");
+    // Use uart_puts directly to try to get something to the UART
+    // with the minimum amount of code. The info() and fatal()
+    // functions are minimal, but have caused hangs before sending
+    // output.
+    uart_puts(PROGRAM_NAME " " PROGRAM_VERSION_STR "\n");
+
+    switch (get_el()) {
+        case 1:
+            uart_puts("Running in EL1\n");
+            break;
+        case 2:
+            uart_puts("Running in EL2\n");
+            setup_el2();
+            break;
+        case 3:
+            uart_puts("EL3 is not supported!\n");
+            break;
+        default:
+            uart_puts("Unknown EL level!\n");
+            break;
+    }
 
     virtio_blk_init();
 
@@ -153,11 +179,6 @@ void rom_main(uint64_t dtb_source) {
 
     uint8_t *dtb_load_addr = (uint8_t*) (KERNEL_LOAD_ADDR + ((kernel_len + 7) & ~0x7));
     load_dtb((uint32_t*) dtb_source, dtb_load_addr);
-
-    asm volatile(
-    "msr cntkctl_el1, %0\n"
-    :: "r"(0x3)  // Enable EL0 access to cntvct_el0 and cntfrq_el0
-    );
 
     info("Starting Linux...");
     asm volatile (

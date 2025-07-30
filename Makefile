@@ -12,7 +12,10 @@ LDFLAGS += -g
 else
 CFLAGS += -O2
 endif
-CFLAGS += -nostdlib -ffreestanding -fno-builtin
+
+# Floating point instructions are disabled to avoid needing to set
+# up support completely when running in EL1. EL2 is fine.
+CFLAGS += -nostdlib -ffreestanding -fno-builtin -mgeneral-regs-only
 CFLAGS += -DPROGRAM_VERSION=$(VERSION)
 LDFLAGS += -z max-page-size=4096
 

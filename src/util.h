@@ -17,7 +17,7 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-#include "printf.h"
+#include <stddef.h>
 
 #define PROGRAM_NAME "picoboot"
 
