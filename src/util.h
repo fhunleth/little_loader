@@ -62,6 +62,7 @@ void fatal(const char *fmt, ...);
 void *memcpy_(void *dst, const void *src, size_t n);
 void *memset_(void *b, int c, size_t len);
 void qsort_(void *base, size_t nel, size_t width, int (*compar)(const void *, const void *));
+char *strcpy_(char *dest, const char *src);
 int strcmp_(const char *s1, const char *s2);
 char *strdup_(const char *s);
 char *strndup_(const char *s, size_t n);

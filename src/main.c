@@ -44,7 +44,8 @@ static uint64_t process_uboot_env()
     char *upgrade_available = NULL;
     char *bootcount = NULL;
     char *kernel_lba_str = NULL;
-    char kernel_lba_key[32] = "x.kernel_lba";
+    char kernel_lba_key[32];
+    strcpy_(kernel_lba_key, "x.kernel_lba");
 
     OK_OR_CLEANUP_MSG(uboot_env_read(&env, (const char *)buffer), "Failed to read u-boot environment from buffer");
     OK_OR_CLEANUP_MSG(uboot_env_getenv(&env, "nerves_fw_active", &active_slot), "Failed to get `nerves_fw_active` from U-Boot environment");

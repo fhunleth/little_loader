@@ -78,6 +78,14 @@ void qsort_(void *base, size_t nel, size_t width, int (*compar)(const void *, co
     }
 }
 
+char * strcpy_(char *dest, const char *src)
+{
+    char *d = dest;
+    while ((*d++ = *src++) != '\0')
+        ;
+    return dest;
+}
+
 int strcmp_(const char *s1, const char *s2)
 {
     while (*s1 && (*s1 == *s2)) {
