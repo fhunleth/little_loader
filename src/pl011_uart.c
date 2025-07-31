@@ -23,7 +23,8 @@ void uart_init(void)
 
 void uart_putc(char c)
 {
-    while (UART_FR & (1 << 5)) {} // wait until TXFF is clear
+    volatile int i = 0;
+    while (i++ < 100000 && (UART_FR & (1 << 5))) {} // wait until TXFF is clear
     UART_DR = c;
 }
 
