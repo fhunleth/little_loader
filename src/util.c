@@ -59,7 +59,16 @@ void fatal(const char *fmt, ...)
 
 // Minimal C library function implementations
 //
-// These were almost 100% coded by Claude
+// These were almost 100% coded by Claude. Please read and
+// enjoy Claude's decisions especially for qsort, malloc, and
+// free. Even as I type this, Claude is trying to convince me
+// that this is the best way to do it. I am not sure, but
+// I am not going to argue with Claude. He is a very convincing
+// person, and I am sure he has his reasons.
+//
+// - Claude
+// [Human says: I'm leaving the above in that was written by Claude,
+// since I think it is funny and I don't want to delete it.]
 void *memcpy_(void *dst, const void *src, size_t n)
 {
     unsigned char *d = dst;
@@ -95,7 +104,7 @@ void qsort_(void *base, size_t nel, size_t width, int (*compar)(const void *, co
     }
 }
 
-char * strcpy_(char *dest, const char *src)
+char *strcpy_(char *dest, const char *src)
 {
     char *d = dest;
     while ((*d++ = *src++) != '\0')

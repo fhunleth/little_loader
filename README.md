@@ -1,9 +1,53 @@
 # Picoboot
 
-## U-Boot environment
+Picoboot is a minimal bootloader to support loading a Linux kernel from a
+disk image that's been prepared with A/B firmware images. It only is
+usable with Qemu. The whole implementation is so simple that it is hoped
+to be possible to follow the code without a ton of effort.
 
-The U-Boot environment is hardcoded to be read from LBA 16 with length of 256
-blocks (128 KB). There's no support for redundant blocks currently.
+## Demo
+
+There's a simple Linux image included for trying out the bootloader. Here's
+an example run:
+
+```sh
+$ ./run_qemu_el1.sh
+picoboot 0.1.0
+Running in EL1
+Booting from slot a with kernel LBA 8192
+Starting Linux...
+Booting Linux on physical CPU 0x0000000000 [0x410fd034]
+Linux version 6.12.27 (fhunleth@sprint) (aarch64-linux-gcc.br_real (Buildroot 2021.11-12449-g1bef613319) 14.2.0, GNU ld (GNU Binutils) 2.42) #10 SMP Sat Jul 26 10:40:14 EDT 2025
+
+...
+
+
+Welcome to Buildroot
+buildroot login:
+```
+
+The login is `root`. To exit, run `poweroff`.
+
+To try this out for yourself, see the section below about building from source.
+
+## Disk image layout
+
+Picoboot expects a disk image with the following layout:
+
+| LBA (512-byte block offset) | Description                      |
+| --------------------------- | -------------------------------- |
+| 0                           | MBR or GPT                       |
+| 16                          | U-Boot environment block (128KB) |
+| n                           | Linux kernel for slot A          |
+| m                           | Linux kernel for slot B          |
+| ...                         | RootFS and data partitions       |
+
+The locations for where to find the Linux kernels (the `Image` files) are
+read from `a.kernel_lba` and `b.kernel_lba` in the U-Boot environment block.
+The variable `nerves_fw_active` should be set to either `a` or `b` to select
+which slot is loaded.
+
+## U-Boot environment
 
 The A/B upgrade mechanism uses a mix of the U-Boot bootcount mechanism with
 Nerves A/B slot tracking variables. While this looks inconsistent, it more
@@ -52,7 +96,7 @@ Here's how to run with the provided test image:
 
 ```sh
 make
-./run_qemu.sh
+./run_qemu_el1.sh
 ```
 
 ## Debugging with gdb
