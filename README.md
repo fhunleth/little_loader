@@ -61,6 +61,7 @@ The following environment variables are meaningful:
    boot. When > 1 (hardcoded now), the other firmware slot will be booted from
    then on. I.e., the firmware will be reverted.
 * `<slot>.kernel_lba` - offset of the Linux kernel on disk
+* `<slot>.kernel_args` - kernel command line options
 * `<slot>.nerves_fw_validated` - `"0"` if not validated, `"1"` if validated
 
 ## Building from source

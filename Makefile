@@ -10,17 +10,18 @@ ifeq ($(DEBUG), 1)
 CFLAGS += -g -DDEBUG
 LDFLAGS += -g
 else
-CFLAGS += -O2
+# Turn off -O2 for now since it's causes a fault in uart_init
+CFLAGS +=
 endif
 
 # Floating point instructions are disabled to avoid needing to set
 # up support completely when running in EL1. EL2 is fine.
-CFLAGS += -nostdlib -ffreestanding -fno-builtin -mgeneral-regs-only
+CFLAGS += -nostdlib -ffreestanding -fno-builtin -mgeneral-regs-only -Werror
 CFLAGS += -DPROGRAM_VERSION=$(VERSION)
 LDFLAGS += -z max-page-size=4096
 
 S_SRC = $(wildcard src/*.S)
-C_SRC = $(wildcard src/*.c)
+C_SRC = $(wildcard src/*.c) $(wildcard src/libfdt/*.c)
 OBJS = $(C_SRC:.c=.o) $(S_SRC:.S=.o)
 
 all: picoboot.elf disk.img

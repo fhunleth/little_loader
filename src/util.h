@@ -61,14 +61,18 @@ void fatal(const char *fmt, ...);
 void util_init(void);
 
 // Minimal C library
+const void *memchr_(const void *s, int c, size_t n);
 void *memcpy_(void *dst, const void *src, size_t n);
+void *memmove_(void *dst, const void *src, size_t n);
+int memcmp_(const void *s1, const void *s2, size_t n);
 void *memset_(void *b, int c, size_t len);
 void qsort_(void *base, size_t nel, size_t width, int (*compar)(const void *, const void *));
+char *strrchr_(const char *s, int c);
 char *strcpy_(char *dest, const char *src);
 int strcmp_(const char *s1, const char *s2);
 char *strdup_(const char *s);
 char *strndup_(const char *s, size_t n);
-size_t strnlen_s_(const char *s, size_t n);
+size_t strnlen_(const char *s, size_t n);
 size_t strlen_(const char *s);
 void putchar_(char c);
 void *malloc_(size_t size);

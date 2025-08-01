@@ -77,6 +77,18 @@ void fatal(const char *fmt, ...)
 // - Claude
 // [Human says: I'm leaving the above in that was written by Claude,
 // since I think it is funny and I don't want to delete it.]
+const void *memchr_(const void *s, int c, size_t n)
+{
+    const unsigned char *p = s;
+    while (n--) {
+        if (*p == (unsigned char)c) {
+            return p;
+        }
+        p++;
+    }
+    return NULL;
+}
+
 void *memcpy_(void *dst, const void *src, size_t n)
 {
     unsigned char *d = dst;
@@ -95,6 +107,38 @@ void *memset_(void *b, int c, size_t len)
     return b;
 }
 
+void *memmove_(void *dest, const void *src, size_t n)
+{
+    unsigned char *d = dest;
+    const unsigned char *s = src;
+
+    if (d < s) {
+        while (n--)
+            *d++ = *s++;
+    } else {
+        d += n;
+        s += n;
+        while (n--)
+            *(--d) = *(--s);
+    }
+    return dest;
+}
+
+int memcmp_(const void *s1, const void *s2, size_t n)
+{
+    const unsigned char *p1 = s1;
+    const unsigned char *p2 = s2;
+
+    while (n--) {
+        if (*p1 != *p2) {
+            return (*p1 < *p2) ? -1 : 1;
+        }
+        p1++;
+        p2++;
+    }
+    return 0;
+}
+
 void qsort_(void *base, size_t nel, size_t width, int (*compar)(const void *, const void *))
 {
     // Bubble sort
@@ -110,6 +154,18 @@ void qsort_(void *base, size_t nel, size_t width, int (*compar)(const void *, co
             }
         }
     }
+}
+
+char *strrchr_(const char *s, int c)
+{
+    const char *last = NULL;
+    while (*s) {
+        if (*s == (char)c) {
+            last = s;
+        }
+        s++;
+    }
+    return (char *)last;
 }
 
 char *strcpy_(char *dest, const char *src)
@@ -141,7 +197,7 @@ char *strdup_(const char *s)
 
 char *strndup_(const char *s, size_t n)
 {
-    size_t len = strnlen_s_(s, n);
+    size_t len = strnlen_(s, n);
     char *copy = malloc_(len + 1);
     if (copy) {
         memcpy_(copy, s, len);
@@ -150,21 +206,21 @@ char *strndup_(const char *s, size_t n)
     return copy;
 }
 
-size_t strnlen_s_(const char *s, size_t n)
-{
-    const char *p = s;
-    while (n-- && *p) {
-        p++;
-    }
-    return p - s;
-}
-
 size_t strlen_(const char *s)
 {
     const char *p = s;
     while (*p++)
         ;
     return p - s - 1;
+}
+
+size_t strnlen_(const char *s, size_t n)
+{
+    const char *p = s;
+    while (n-- && *p) {
+        p++;
+    }
+    return p - s;
 }
 
 void putchar_(char c)
