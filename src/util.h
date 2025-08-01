@@ -58,6 +58,8 @@ void fatal(const char *fmt, ...);
 #define assert(CONDITION)
 #endif
 
+void util_init(void);
+
 // Minimal C library
 void *memcpy_(void *dst, const void *src, size_t n);
 void *memset_(void *b, int c, size_t len);

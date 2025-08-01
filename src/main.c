@@ -148,6 +148,7 @@ static void setup_el2()
 }
 
 void rom_main(uint64_t dtb_source) {
+    util_init();
     uart_init();
 
     // Use uart_puts directly to try to get something to the UART

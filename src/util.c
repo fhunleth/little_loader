@@ -14,6 +14,14 @@
 #define NANOPRINTF_IMPLEMENTATION
 #include "nanoprintf.h"
 
+extern char _stack_top; // Defined in linker script
+static char *heap;
+
+void util_init(void)
+{
+    heap = (char *) &_stack_top;
+}
+
 static void poweroff(void)
 {
     // PSCI system_off function ID: 0x84000008
@@ -164,13 +172,8 @@ void putchar_(char c)
     uart_putc(c);
 }
 
-extern char _stack_top; // Defined in linker script
 void *malloc_(size_t size)
 {
-    static char *heap = NULL;
-    if (heap == NULL)
-        heap = (char *) &_stack_top;
-
     char *ptr = heap;
     heap += (size + 7) & ~0x7; // Align to 8 bytes
     return (void*) ptr;
