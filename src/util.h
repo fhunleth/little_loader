@@ -59,6 +59,7 @@ void fatal(const char *fmt, ...);
 #endif
 
 void util_init(void);
+int get_el(void);
 
 // Minimal C library
 const void *memchr_(const void *s, int c, size_t n);

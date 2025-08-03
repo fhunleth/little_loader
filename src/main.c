@@ -20,13 +20,6 @@ struct boot_config {
     char *kernel_args;
 };
 
-static int get_el(void)
-{
-    unsigned long el;
-    asm volatile ("mrs %0, CurrentEL" : "=r"(el));
-    return (el >> 2);
-}
-
 uint32_t be32_to_le32(uint32_t x)
 {
     return ((x >> 24) & 0x000000FF) |

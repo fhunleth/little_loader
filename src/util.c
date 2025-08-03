@@ -24,17 +24,44 @@ void util_init(void)
 
 static void poweroff(void)
 {
-    // PSCI system_off function ID: 0x84000008
-    asm volatile (
-        "mov x0, %0\n"
-        "smc #0\n"
-        :
-        : "r"(0x84000008UL)
-        : "x0"
-    );
+    switch (get_el()) {
+        case 0:
+            uart_puts("Power off unimplemented for EL0.\r\n");
+            break;
+        case 1:
+            // Try HVC to EL2 first (if EL2 is available)
+            asm volatile (
+                "mov x0, %0\n"
+                "hvc #0\n"
+                :
+                : "r"(0x84000008UL)  // PSCI system_off function ID
+                : "x0"
+            );
+            // If HVC fails, fall through to try direct PSCI
+        case 2:
+            // PSCI system_off function ID: 0x84000008
+            asm volatile (
+                "mov x0, %0\n"
+                "smc #0\n"
+                :
+                : "r"(0x84000008UL)
+                : "x0"
+            );
+            break;
+        case 3: // EL3
+            uart_puts("Power off unimplemented for EL3.\r\n");
+            break;
+    }
 
     // Fallback if PSCI doesn't work
     for (;;) { __asm__ volatile ("wfe"); }
+}
+
+int get_el(void)
+{
+    unsigned long el;
+    asm volatile ("mrs %0, CurrentEL" : "=r"(el));
+    return (el >> 2);
 }
 
 static void nano_putc(int c, void *ctx)

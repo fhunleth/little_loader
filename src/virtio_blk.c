@@ -35,7 +35,12 @@ void virtio_blk_init(void) {
         VIRT_MMIO_VERSION != 2 ||
         VIRT_MMIO_DEVICE_ID != 2 ||
         VIRT_MMIO_VENDOR_ID != 0x554d4551)
-        fatal("Couldn't find virtio disk\n");
+        fatal("Couldn't find a virtio blk device.\n\n"
+            "Check the QEMU command line for the following:\n"
+            "\n"
+            "    -global virtio-mmio.force-legacy=false\n"
+            "    -drive if=none,file=disk.img,format=raw,id=vdisk\n"
+            "    -device virtio-blk-device,drive=vdisk,bus=virtio-mmio-bus.0\n");
 
     uint32_t mmio_status = 0;
     VIRT_MMIO_STATUS = mmio_status; // RESET
