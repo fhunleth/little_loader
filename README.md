@@ -119,6 +119,24 @@ $ $CROSS-gdb picoboot.elf
 
 Then use gdb like normal.
 
+## FAQ
+
+### Why use `-kernel` rather than `-bios` when starting Qemu?
+
+There are a few reasons, but the main ones are that Qemu sets up much of the
+environment and supplies a device tree blob with `-kernel`. That simplifies the
+Picoboot implementation a lot.
+
+### Why not use U-Boot?
+
+Mostly laziness. It shouldn't have been that hard to build U-Boot, but when
+there was friction, it seemed easier to write a minimal loader with a vibe coded
+virtio block driver. It turned out that both Claude and GPT4o were hopelessly
+confused between the legacy and non-legacy versions of the block driver. This
+then became an interesting exercise and now the project is just convenient to
+have around since it has so little code. There's certainly nothing wrong with
+U-Boot.
+
 ## Useful references
 
 https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.pdf
