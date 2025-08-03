@@ -2,7 +2,7 @@
 
 qemu-system-aarch64 \
     -M virt -cpu cortex-a53 -nographic -smp 1 \
-    -kernel picoboot.elf \
+    -kernel little_loader.elf \
     -S -s \
     -global virtio-mmio.force-legacy=false \
     -drive if=none,file=disk.img,format=raw,id=vdisk \

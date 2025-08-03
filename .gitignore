@@ -1,4 +1,4 @@
 *.o
-/picoboot.elf
+/little_loader.elf
 /disk.img
 /demo.fw

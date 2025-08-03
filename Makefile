@@ -24,10 +24,10 @@ S_SRC = $(wildcard src/*.S)
 C_SRC = $(wildcard src/*.c) $(wildcard src/libfdt/*.c)
 OBJS = $(C_SRC:.c=.o) $(S_SRC:.S=.o)
 
-all: picoboot.elf disk.img
+all: little_loader.elf disk.img
 
 gdb:
-	$(CROSS)-gdb picoboot.elf
+	$(CROSS)-gdb little_loader.elf
 
 gdb-vmlinux:
 	$(CROSS)-gdb vmlinux
@@ -41,7 +41,7 @@ demo.fw: demo/Image demo/fwup.conf
 upgrade: demo.fw
 	fwup demo.fw -d disk.img -t upgrade
 
-picoboot.elf: $(OBJS)
+little_loader.elf: $(OBJS)
 	$(CROSS)-ld -T src/linker.ld $(LDFLAGS) -o $@ $^
 
 %.o: %.c
@@ -54,5 +54,5 @@ virtio_blk.o: virtio.h
 main.o: virtio.h
 
 clean:
-	$(RM) $(OBJS) *.elf disk.img demo/demo.fw
+	$(RM) $(OBJS) little_loader.elf disk.img demo/demo.fw
 

@@ -1,6 +1,6 @@
-# Picoboot
+# Little Loader
 
-Picoboot is a minimal bootloader to support loading a Linux kernel from a
+Little Loader is a minimal bootloader to support loading a Linux kernel from a
 disk image that's been prepared with A/B firmware images. It only is
 usable with Qemu. The whole implementation is so simple that it is hoped
 to be possible to follow the code without a ton of effort.
@@ -12,7 +12,7 @@ an example run:
 
 ```sh
 $ ./run_qemu_el1.sh
-picoboot 0.1.0
+little_loader 0.1.0
 Running in EL1
 Booting from slot a with kernel LBA 8192
 Starting Linux...
@@ -32,7 +32,7 @@ To try this out for yourself, see the section below about building from source.
 
 ## Disk image layout
 
-Picoboot expects a disk image with the following layout:
+Little Loader expects a disk image with the following layout:
 
 | LBA (512-byte block offset) | Description                      |
 | --------------------------- | -------------------------------- |
@@ -102,8 +102,8 @@ make
 
 ## Debugging with gdb
 
-First, decide whether you want to debug `picoboot` or the Linux kernel. If
-debugging `picoboot`, enable symbols in `picoboot.elf` by building with `-g`. If
+First, decide whether you want to debug `little_loader` or the Linux kernel. If
+debugging `little_loader`, enable symbols in `little_loader.elf` by building with `-g`. If
 debugging the Linux kernel, then you'll need `vmlinux`.
 
 Add `-S -s` to the qemu commandline to start it and enable remote debugging to
@@ -112,7 +112,7 @@ port `1234`. Qemu will start paused until gdb connects.
 Start `gdb` by running:
 
 ```
-$ $CROSS-gdb picoboot.elf
+$ $CROSS-gdb little_loader.elf
 ...
 (gdb) target remote :1234
 ```
@@ -125,7 +125,7 @@ Then use gdb like normal.
 
 There are a few reasons, but the main ones are that Qemu sets up much of the
 environment and supplies a device tree blob with `-kernel`. That simplifies the
-Picoboot implementation a lot.
+Little Loader implementation a lot.
 
 ### Why not use U-Boot?
 

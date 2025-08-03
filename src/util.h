@@ -19,7 +19,7 @@
 
 #include <stddef.h>
 
-#define PROGRAM_NAME "picoboot"
+#define PROGRAM_NAME "little_loader"
 
 #ifndef PROGRAM_VERSION
 #define PROGRAM_VERSION unknown
