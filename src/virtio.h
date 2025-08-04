@@ -1,7 +1,17 @@
-#pragma once
+/*
+ * SPDX-FileCopyrightText: 2025 Frank Hunleth
+ * SPDX-FileCopyrightText: 2007, 2009, IBM Corporation
+ * SPDX-FileCopyrightText: 2011, Red Hat, Inc
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+#ifndef VIRTIO_H
+#define VIRTIO_H
 #include <stdint.h>
 
-// See https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.pdf
+// Significant portions of this file come from the virtio specification
+// at https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.pdf
 
 // HACK: It could be anywhere from 0x0a000000UL to 0xa003e00 according to the dtb. I found it manually.
 //#define VIRTIO_BLK_MMIO_BASE 0xa003e00UL
@@ -98,3 +108,5 @@ struct virtio_blk_req {
 void virtio_blk_init(void);
 int virtio_blk_read(uint64_t lba, uint32_t len_bytes, void *buffer);
 int virtio_blk_write(uint64_t lba, uint32_t len_bytes, const void *buffer);
+
+#endif // VIRTIO_H

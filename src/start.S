@@ -1,3 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: 2025 Frank Hunleth
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
 .section .text
 .global _start
 _start:

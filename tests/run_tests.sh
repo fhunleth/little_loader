@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# SPDX-FileCopyrightText: 2025 Frank Hunleth
+#
+# SPDX-License-Identifier: BSD-3-Clause
+
 # "readlink -f" implementation for BSD
 # This code was extracted from the Elixir shell scripts
 readlink_f () {

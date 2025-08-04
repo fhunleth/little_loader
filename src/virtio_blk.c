@@ -1,3 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: 2025 Frank Hunleth
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
 #include "virtio.h"
 #include "util.h"
 

@@ -11,7 +11,7 @@ There's a simple Linux image included for trying out the bootloader. Here's
 an example run:
 
 ```sh
-$ ./run_qemu_el1.sh
+$ ./run_qemu.sh
 little_loader 0.1.0
 Running in EL1
 Booting from slot a with kernel LBA 8192
@@ -97,7 +97,7 @@ Here's how to run with the provided test image:
 
 ```sh
 make
-./run_qemu_el1.sh
+./run_qemu.sh
 ```
 
 ## Debugging with gdb

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 Frank Hunleth
+#
+# SPDX-License-Identifier: BSD-3-Clause
+
 VERSION=0.1.0
 
 CROSS = aarch64-nerves-linux-gnu
