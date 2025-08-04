@@ -1,0 +1,42 @@
+version: 2.1
+
+defaults: &defaults
+  working_directory: ~/repo
+  environment:
+    LC_ALL: C.UTF-8
+
+jobs:
+  check-license:
+    docker:
+      - image: fsfe/reuse:latest
+    steps:
+      - checkout
+      - run: reuse lint
+
+  build-test:
+    docker:
+      - image: alpine:3.22.1
+    <<: *defaults
+    steps:
+      - run:
+          name: Install system dependencies
+          command: apk add --no-cache build-base fwup qemu-system-aarch64 mise openssh bash jq curl tar xz
+      - checkout
+      - run: mise plugin add nerves-toolchain git@github.com:nerves-project/asdf-plugin-nerves-toolchain.git
+      - run: mise install
+      - run:
+          name: Build
+          command:
+            eval "$(mise hook-env -s bash)" && make && make check
+
+workflows:
+  checks:
+    jobs:
+      - check-license:
+          filters:
+            tags:
+              only: /.*/
+      - build-test:
+          filters:
+            tags:
+              only: /.*/
