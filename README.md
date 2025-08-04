@@ -1,5 +1,8 @@
 # Little Loader
 
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/fhunleth/little_loader/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/fhunleth/little_loader/tree/main)
+[![REUSE status](https://api.reuse.software/badge/github.com/fhunleth/little_loader)](https://api.reuse.software/info/github.com/fhunleth/little_loader)
+
 Little Loader is a minimal bootloader to support loading a Linux kernel from a
 disk image that's been prepared with A/B firmware images. It only is
 usable with Qemu. The whole implementation is so simple that it is hoped
