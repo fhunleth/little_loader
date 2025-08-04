@@ -1,0 +1,21 @@
+#!/bin/sh
+
+#
+# Check that starting in EL2 mode works
+#
+
+fwup $DEMO_FW -d $DISK_IMAGE
+QEMU_MACHINE=virt,virtualization=on
+
+cat >"$AUTORUN_SH" <<EOF
+#!/bin/sh
+
+# Check that /proc/cmdline is set to "booting=a\n"
+if grep -q "booting=a" /proc/cmdline; then
+    touch /mnt/hostshare/success
+else
+    echo "Command line arguments not set correctly"
+fi
+
+poweroff
+EOF

@@ -1,0 +1,21 @@
+#!/bin/sh
+
+#
+# Test that no options and no configuration does the expected
+#
+
+fwup $DEMO_FW -d $DISK_IMAGE
+
+cat >"$AUTORUN_SH" <<EOF
+#!/bin/sh
+
+# Check that /proc/cmdline is set to "booting=a\n"
+if grep -q "booting=a" /proc/cmdline; then
+    touch /mnt/hostshare/success
+else
+    echo "Command line arguments not set correctly"
+fi
+
+poweroff
+EOF
+

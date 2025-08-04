@@ -53,6 +53,10 @@ little_loader.elf: $(OBJS)
 virtio_blk.o: virtio.h
 main.o: virtio.h
 
+check: all
+	cd tests && ./run_tests.sh
+
 clean:
 	$(RM) $(OBJS) little_loader.elf disk.img demo/demo.fw
 
+.PHONY: all clean check upgrade gdb
