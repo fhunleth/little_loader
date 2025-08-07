@@ -4,9 +4,9 @@
 
 VERSION=0.1.0
 
-CROSS = aarch64-nerves-linux-gnu
+CROSS = aarch64-nerves-linux-gnu-
 # Uncomment when building with Homebrew's AARCH64 cross-compiler
-#CROSS = aarch64-elf
+#CROSS = aarch64-elf-
 
 # DEBUG = 1
 
@@ -31,10 +31,10 @@ OBJS = $(C_SRC:.c=.o) $(S_SRC:.S=.o)
 all: little_loader.elf disk.img
 
 gdb:
-	$(CROSS)-gdb little_loader.elf
+	$(CROSS)gdb little_loader.elf
 
 gdb-vmlinux:
-	$(CROSS)-gdb vmlinux
+	$(CROSS)gdb vmlinux
 
 disk.img: demo.fw
 	fwup demo.fw -d disk.img
@@ -46,13 +46,13 @@ upgrade: demo.fw
 	fwup demo.fw -d disk.img -t upgrade
 
 little_loader.elf: $(OBJS)
-	$(CROSS)-ld -T src/linker.ld $(LDFLAGS) -o $@ $^
+	$(CROSS)ld -T src/linker.ld $(LDFLAGS) -o $@ $^
 
 %.o: %.c
-	$(CROSS)-gcc -c $(CFLAGS) -o $@ $<
+	$(CROSS)gcc -c $(CFLAGS) -o $@ $<
 
 %.o: %.S
-	$(CROSS)-as -o $@ $<
+	$(CROSS)as -o $@ $<
 
 virtio_blk.o: virtio.h
 main.o: virtio.h
