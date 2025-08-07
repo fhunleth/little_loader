@@ -20,7 +20,7 @@ endif
 
 # Floating point instructions are disabled to avoid needing to set
 # up support completely when running in EL1. EL2 is fine.
-CFLAGS += -nostdlib -ffreestanding -fno-builtin -mgeneral-regs-only -Werror
+CFLAGS += -nostdlib -ffreestanding -fno-builtin -mgeneral-regs-only -Werror -fno-stack-protector
 CFLAGS += -DPROGRAM_VERSION=$(VERSION)
 LDFLAGS += -z max-page-size=4096
 
