@@ -22,6 +22,7 @@ endif
 # up support completely when running in EL1. EL2 is fine.
 CFLAGS += -nostdlib -ffreestanding -fno-builtin -mgeneral-regs-only -Werror -fno-stack-protector
 CFLAGS += -DPROGRAM_VERSION=$(VERSION)
+CFLAGS += $(EXTRA_CFLAGS)
 LDFLAGS += -z max-page-size=4096
 
 S_SRC = $(wildcard src/*.S)
