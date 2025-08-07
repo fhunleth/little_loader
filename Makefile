@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
-VERSION=0.1.0
+VERSION=0.1.1
 
 CROSS = aarch64-nerves-linux-gnu-
 # Uncomment when building with Homebrew's AARCH64 cross-compiler
