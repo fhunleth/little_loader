@@ -1,3 +1,7 @@
+<!--
+  SPDX-FileCopyrightText: None
+  SPDX-License-Identifier: 0BSD
+-->
 # Changelog
 
 ## v0.1.1
@@ -8,4 +12,3 @@
 ## v0.1.0
 
 Initial release
-

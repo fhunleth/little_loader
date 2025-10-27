@@ -6,9 +6,7 @@ path = [
  ".gdbinit",
  ".gitignore",
  ".tool-versions",
- "CHANGELOG.md",
  "demo/fwup.conf",
- "README.md",
  "REUSE.toml",
  "run_qemu.sh",
  "run_qemu_gdb.sh"

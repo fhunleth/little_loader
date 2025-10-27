@@ -1,3 +1,7 @@
+<!--
+  SPDX-FileCopyrightText: None
+  SPDX-License-Identifier: 0BSD
+-->
 # Little Loader
 
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/fhunleth/little_loader/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/fhunleth/little_loader/tree/main)
