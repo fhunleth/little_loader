@@ -139,6 +139,13 @@ then became an interesting exercise and now the project is just convenient to
 have around since it has so little code. There's certainly nothing wrong with
 U-Boot.
 
+### Can I adapt this for real hardware?
+
+I think it will be less useful for that. Little Loader doesn't even try to do
+normal bootloader tasks like configuring DRAM and clocks. Then you'll also need
+device drivers for reading the kernel image, and those are significantly more
+involved than virtio.
+
 ## Useful references
 
 https://docs.oasis-open.org/virtio/virtio/v1.3/virtio-v1.3.pdf
